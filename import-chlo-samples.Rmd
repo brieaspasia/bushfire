@@ -1,0 +1,61 @@
+---
+title: "Import-chlo-samples"
+author: "Brie Sherow"
+date: "24/10/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+install.packages("splitstackshape")
+library(splitstackshape) #text to column
+library(tidyverse)
+```
+#create folder with the date of the observations and set this as the working directory
+#move sample table, results table, txt file, and baseline to a folder called "metadata" 
+#create folder with all of the measurement csvs called "samples"
+
+```{r combine-csvs}
+#set working directory
+setwd("~/Desktop/Bushfire/r-bushfire/oct21chlo")
+
+#set path **CHANGE THIS EVERY TIME TO MATCH DATED FOLDER**
+mydir <- "chlooct22/samples"
+
+#import the filenames as a list of values
+filenames <- list.files(path=mydir, pattern="*.csv", full.names=TRUE) 
+
+#use those values to populate a merged dataframe of all csv results
+dat <- do.call("rbind", sapply(filenames, read.csv, simplify = FALSE)) 
+
+#create a column from the name of each csv
+dat$sample <- row.names(dat)
+
+#clean column names to find sample number
+dat <- dat %>%
+  cSplit('sample', sep=".") %>% #text to column
+  cSplit('sample_1', sep="/") %>%
+  select(nm.s.A, X0.000000, sample_1_3) #remove irrelevant columns
+
+#rename columns
+names(dat) = c("wavelength", "absorbance", "Sample ID")
+
+#long to wide
+dat <- spread(dat, wavelength, absorbance)
+```
+
+```{r correct-order}
+
+#import sample order **CHANGE EVERY TIME TO MATCH DATED FOLDER
+sample_order <- read_csv("chlooct22/metadata/Results Table.csv")
+
+#join absorbance values to sample order
+df <- left_join(sample_order, dat, by="Sample ID")
+
+#remove blank column
+df <- select(df, -Description)
+
+#write csv **CHANGE FILENAME TO DATE**
+write_csv(df, "oct22samples.csv")
+```
+
