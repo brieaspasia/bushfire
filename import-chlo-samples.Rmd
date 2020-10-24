@@ -16,8 +16,6 @@ library(tidyverse)
 #create folder with all of the measurement csvs called "samples"
 
 ```{r combine-csvs}
-#set working directory
-setwd("~/Desktop/Bushfire/r-bushfire/oct21chlo")
 
 #set path **CHANGE THIS EVERY TIME TO MATCH DATED FOLDER**
 mydir <- "chlooct22/samples"
@@ -34,7 +32,7 @@ dat$sample <- row.names(dat)
 #clean column names to find sample number
 dat <- dat %>%
   cSplit('sample', sep=".") %>% #text to column
-  cSplit('sample_1', sep="/") %>%
+  cSplit('sample_1', sep="/") %>% #get rid of "/"
   select(nm.s.A, X0.000000, sample_1_3) #remove irrelevant columns
 
 #rename columns
