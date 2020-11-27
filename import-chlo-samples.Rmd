@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 install.packages("splitstackshape")
 library(splitstackshape) #text to column
+library(stringr) #string split into column
 library(tidyverse)
 ```
 #create folder with the date of the observations and set this as the working directory
@@ -18,7 +19,7 @@ library(tidyverse)
 ```{r combine-csvs}
 
 #set path **CHANGE THIS EVERY TIME TO MATCH DATED FOLDER**
-mydir <- "chlooct22/samples"
+mydir <- "chlo2611/samples"
 
 #import the filenames as a list of values
 filenames <- list.files(path=mydir, pattern="*.csv", full.names=TRUE) 
@@ -45,7 +46,7 @@ dat <- spread(dat, wavelength, absorbance)
 ```{r correct-order}
 
 #import sample order **CHANGE EVERY TIME TO MATCH DATED FOLDER
-sample_order <- read_csv("chlooct22/metadata/Results Table.csv")
+sample_order <- read_csv("chlo2611/metadata/Results Table.csv")
 
 #join absorbance values to sample order
 df <- left_join(sample_order, dat, by="Sample ID")
@@ -53,7 +54,31 @@ df <- left_join(sample_order, dat, by="Sample ID")
 #remove blank column
 df <- select(df, -Description)
 
+df <- df %>% separate(`Sample ID`, c("Code", "acid"))
+
 #write csv **CHANGE FILENAME TO DATE**
-write_csv(df, "oct22samples.csv")
+write_csv(df, "chlo2611.csv")
 ```
+
+```{r match-sampleID}
+
+#import sample ID and dry weight
+freezedry <- read_csv("freezedry.csv") #includes sample ID, dry weight
+
+#rename column in df
+df$Code <- df$`Sample ID`
+
+#change to character class to match with sample ID
+freezedry$Code <- as.character(freezedry$Code)
+
+#join sample ID and dry weight to sample order
+chl_data <- left_join(df, freezedry, by="Code")
+
+#correct the order of the columns
+chl_data <- chl_data[, c(9,1,2,10,3,4,5,6,7,8)]
+
+#write csv **CHANGE FILENAME TO DATE**
+write_csv(chl_data, "chlo2611.csv")
+```
+
 
