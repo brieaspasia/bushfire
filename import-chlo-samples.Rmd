@@ -55,18 +55,12 @@ df <- left_join(sample_order, dat, by="Sample ID")
 df <- select(df, -Description)
 
 df <- df %>% separate(`Sample ID`, c("Code", "acid"))
-
-#write csv **CHANGE FILENAME TO DATE**
-write_csv(df, "chlo2611.csv")
 ```
 
 ```{r match-sampleID}
 
 #import sample ID and dry weight
 freezedry <- read_csv("freezedry.csv") #includes sample ID, dry weight
-
-#rename column in df
-df$Code <- df$`Sample ID`
 
 #change to character class to match with sample ID
 freezedry$Code <- as.character(freezedry$Code)
