@@ -7,7 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-install.packages("splitstackshape")
+# install.packages("splitstackshape")
 library(splitstackshape) #text to column
 library(stringr) #string split into column
 library(tidyverse)
@@ -19,7 +19,8 @@ library(tidyverse)
 ```{r combine-csvs}
 
 #set path **CHANGE THIS EVERY TIME TO MATCH DATED FOLDER**
-mydir <- "chlo2611/samples"
+#example: mydir <- "chlo2611/samples"
+mydir <- "chlo220421am/samples"
 
 #import the filenames as a list of values
 filenames <- list.files(path=mydir, pattern="*.csv", full.names=TRUE) 
@@ -46,7 +47,8 @@ dat <- spread(dat, wavelength, absorbance)
 ```{r correct-order}
 
 #import sample order **CHANGE EVERY TIME TO MATCH DATED FOLDER
-sample_order <- read_csv("chlo2611/metadata/Results Table.csv")
+#example: sample_order <- read_csv("chlo2611/metadata/Results Table.csv")
+sample_order <- read_csv("chlo220421am/metadata/Results Table.csv")
 
 #join absorbance values to sample order
 df <- left_join(sample_order, dat, by="Sample ID")
@@ -72,7 +74,8 @@ chl_data <- left_join(df, freezedry, by="Code")
 chl_data <- chl_data[, c(9,1,2,10,3,4,5,6,7,8)]
 
 #write csv **CHANGE FILENAME TO DATE**
-write_csv(chl_data, "chlo2611.csv")
+# example: write_csv(chl_data, "chlo2611.csv")
+write_csv(chl_data, "chlo220421am.csv")
 ```
 
 
